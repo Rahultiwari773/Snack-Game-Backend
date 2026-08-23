@@ -28,6 +28,9 @@ app.get('/', (req, res) => {
   });
 });
 
+// Ignore favicon requests gracefully
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Neon Snake Backend API is running' });
