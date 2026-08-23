@@ -15,6 +15,19 @@ app.use(express.json());
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/user', require('./routes/userRoutes'));
 
+// Root welcome endpoint
+app.get('/', (req, res) => {
+  res.json({
+    status: 'OK',
+    message: 'Welcome to Neon Snake 3D & Saanp Sidi Backend API',
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth',
+      user: '/api/user',
+    },
+  });
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Neon Snake Backend API is running' });
