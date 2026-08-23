@@ -39,19 +39,36 @@ app.get('/api/health', (req, res) => {
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/snake_game_db';
 
+let isDbConnected = false;
+
+// Middleware to check database connection status
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/auth') || req.path.startsWith('/api/user')) {
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({
+        message: 'Database connection offline. Please configure a valid cloud MONGODB_URI (e.g. MongoDB Atlas) in Render Environment Variables.',
+      });
+    }
+  }
+  next();
+});
+
 // Connect to MongoDB
 mongoose
-  .connect(MONGODB_URI)
+  .connect(MONGODB_URI, {
+    serverSelectionTimeoutMS: 5000,
+  })
   .then(() => {
+    isDbConnected = true;
     console.log('⚡ Connected to MongoDB successfully!');
-    app.listen(PORT, () => {
-      console.log(`🚀 Server listening on http://localhost:${PORT}`);
-    });
   })
   .catch((err) => {
+    isDbConnected = false;
     console.warn('⚠️ MongoDB connection error:', err.message);
     console.log('Starting Express server in standalone mode...');
-    app.listen(PORT, () => {
-      console.log(`🚀 Server listening on http://localhost:${PORT} (offline mode)`);
-    });
   });
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server listening on port ${PORT}`);
+});
+
