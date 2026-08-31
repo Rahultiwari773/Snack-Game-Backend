@@ -82,8 +82,10 @@ mongoose.connection.on('disconnected', () => {
 // Connect to MongoDB
 mongoose
   .connect(MONGODB_URI, {
+    maxPoolSize: 10,
+    minPoolSize: 2,
     serverSelectionTimeoutMS: 5000,
-    connectTimeoutMS: 10000,
+    socketTimeoutMS: 45000,
   })
   .catch((err) => {
     console.warn('⚠️ Initial MongoDB connection error:', err.message);

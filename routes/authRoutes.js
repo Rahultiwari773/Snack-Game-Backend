@@ -37,7 +37,7 @@ router.post('/register', async (req, res) => {
         await userExists.save();
 
         const devOTP = !process.env.GMAIL_USER ? otp : undefined;
-        await sendOTPEmail(userExists.email, userExists.name, otp);
+        sendOTPEmail(userExists.email, userExists.name, otp).catch((err) => console.warn('OTP Email bg error:', err.message));
         return res.status(200).json({
           message: 'Account registered previously but unverified. Sent fresh 6-digit OTP to your email.',
           email: userExists.email,
@@ -62,8 +62,8 @@ router.post('/register', async (req, res) => {
     });
 
     if (user) {
-      // Send OTP Email
-      await sendOTPEmail(user.email, user.name, otp);
+      // Send OTP Email asynchronously (non-blocking)
+      sendOTPEmail(user.email, user.name, otp).catch((err) => console.warn('OTP Email bg error:', err.message));
 
       const devOTP = !process.env.GMAIL_USER ? otp : undefined;
       res.status(201).json({
@@ -112,8 +112,8 @@ router.post('/verify-otp', async (req, res) => {
     user.otpExpiresAt = null;
     await user.save();
 
-    // Send confirmation email
-    await sendCredentialsEmail(user.email, user.name);
+    // Send confirmation email asynchronously (non-blocking)
+    sendCredentialsEmail(user.email, user.name).catch((err) => console.warn('Credentials Email bg error:', err.message));
 
     res.json({
       message: 'Email verified successfully! Welcome to Neon Snake 3D.',
@@ -159,7 +159,7 @@ router.post('/resend-otp', async (req, res) => {
     await user.save();
 
     const devOTP = !process.env.GMAIL_USER ? otp : undefined;
-    await sendOTPEmail(user.email, user.name, otp);
+    sendOTPEmail(user.email, user.name, otp).catch((err) => console.warn('OTP Email bg error:', err.message));
 
     res.json({ message: 'Fresh 6-digit OTP code sent to your email!', devOTP });
   } catch (error) {
