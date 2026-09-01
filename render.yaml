@@ -1,17 +1,16 @@
 services:
   - type: web
-    name: snake-game-backend
+    name: snack-game-backend
     env: node
     buildCommand: npm install
     startCommand: node server.js
     envVars:
-      - key: PORT
-        value: 5000
       - key: MONGODB_URI
-        sync: false
+        value: mongodb+srv://rahultiwariinfo773_db_user:Rahul%40773@cluster0.9eqdktd.mongodb.net/snake_game_db?retryWrites=true&w=majority
       - key: JWT_SECRET
         value: super_secret_neon_snake_jwt_key_2026
       - key: GMAIL_USER
         value: rahultiwari771779@gmail.com
       - key: GMAIL_PASS
         value: zcozhwzgrwnkjuav
+
